@@ -1,5 +1,6 @@
 import fetch from "isomorphic-fetch";
 import { env, customHeaders } from "../../code/configs";
+import { compose } from "node-fetch-middleware";
 
 const methods = ["post", "get", "put", "delete", "update", "patch"];
 const api = {};
@@ -18,7 +19,22 @@ const APICreator = ({ method, token }) => {
       options.headers["Authorization"] = token;
     }
 
-    return fetch(url, options)
+    const mw = async (url, init, next) => {
+      const response = await next(url, init);
+      if (
+        response.status === 401 &&
+        window &&
+        "location" in window &&
+        window.location.pathname.includes("/dashboard")
+      ) {
+        window.location = "/login";
+      }
+      return response;
+    };
+
+    const customFetch = compose([mw]);
+
+    return customFetch(url, options)
       .then((response) => {
         return response.json().then((data) => {
           return {
