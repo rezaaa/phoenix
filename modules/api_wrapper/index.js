@@ -1,6 +1,6 @@
-import fetch from "isomorphic-fetch";
 import { env, customHeaders } from "../../code/configs";
 import { compose } from "node-fetch-middleware";
+import Cookies from "js-cookie";
 
 const methods = ["post", "get", "put", "delete", "update", "patch"];
 const api = {};
@@ -28,6 +28,8 @@ const APICreator = ({ method, token }) => {
         window.location.pathname.includes("/dashboard")
       ) {
         window.location = "/login";
+        Cookies.remove("REFRESH_TOKEN");
+        Cookies.remove("APP_TOKEN");
       }
       return response;
     };
