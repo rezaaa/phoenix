@@ -11,7 +11,7 @@ const APICreator = ({ method, token }) => {
     const url = isAbsolute ? endpoint : `${env.APP_API_BASE}${endpoint}`;
     const options = {
       method: method.toUpperCase(),
-      body: JSON.stringify(body),
+      ...(body && {body: JSON.stringify(body)}),
       headers: customHeaders
     };
 
